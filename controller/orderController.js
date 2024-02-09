@@ -92,7 +92,6 @@ const getOrderById = async function (req, res) {
         // console.log(results);
         await res.send(results);
     } finally {
-        // Ensures that the client will close when you finish/error
         await client.close();
     }
 };
@@ -108,26 +107,21 @@ const createOrder = async function (req, res) {
       const ordersCollection = await client.db("ecommerce").collection("orders");
       const order_productCollection = await client.db("ecommerce").collection("order_product");
   
-      // Check if an order with the same order_id already exists
       const existingOrder = await ordersCollection.findOne({ order_id });
   
-      // If order with the same order_id already exists, return an error
       if (existingOrder) {
         return res.status(400).send({
           message: "Order with the same order_id already exists!",
         });
       }
   
-      // Create a new order
       const newOrder = {
         user_id,
         order_id,
       };
   
-      // Insert the new order into the ordersCollection
       await ordersCollection.insertOne(newOrder);
   
-      // Insert each product in order_produk array into order_productCollection
       for (const product of order_produk) {
         const { product_id, qty } = product;
   
@@ -158,17 +152,14 @@ const createOrder = async function (req, res) {
       const ordersCollection = await client.db("ecommerce").collection("orders");
       const order_productCollection = await client.db("ecommerce").collection("order_product");
   
-      // Check if the order with the specified order_id exists
       const existingOrder = await ordersCollection.findOne({ order_id });
   
-      // If the order doesn't exist, return an error
       if (!existingOrder) {
         return res.status(404).send({
           message: "Order not found!",
         });
       }
     
-      // Update the order products in order_productCollection
       await order_productCollection.deleteMany({ order_id });
       for (const product of order_produk) {
         const { product_id, qty } = product;

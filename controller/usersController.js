@@ -6,11 +6,9 @@ const getAllUser = async function (req, res) {
 
     let collection = await client.db("ecommerce").collection("users");
     let results = await collection.find({}).toArray();
-    // console.log(results);
     console.log("get all users");
     await res.send(results);
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 };
@@ -21,7 +19,6 @@ const getApiKey = async function (req, res) {
 
     const usersCollection = await client.db("ecommerce").collection("users");
 
-    // Get produk berdasarkan kategoriId
     const users = await usersCollection
       .find({
         no_hp: search_no_hp,
@@ -100,32 +97,28 @@ const updateUser = async function (req, res) {
 
 const registerUser = async function (req, res) {
   const crypto = require("crypto");
-  const { no_hp, name } = req.body; // Ambil no_hp dan name dari body request
+  const { no_hp, name } = req.body; 
   const user_id = Math.floor(Math.random() * 900000) + 100000;
-  const apiKey = crypto.randomBytes(16).toString("hex"); // Menghasilkan API key baru
+  const apiKey = crypto.randomBytes(16).toString("hex");
 
   try {
     await client.connect();
 
     const usersCollection = await client.db("ecommerce").collection("users");
 
-    // Cek apakah user dengan no_hp tersebut sudah terdaftar
     const existingUser = await usersCollection.findOne({ no_hp });
 
-    // Jika user sudah terdaftar, kirim pesan kesalahan
     if (existingUser) {
       return res.status(400).send({
         message: "User dengan nomor HP tersebut sudah terdaftar!",
       });
     }
 
-    // Jika user belum terdaftar, tambahkan user baru
     const newUser = {
       user_id,
       no_hp,
       name,
-      api_key: apiKey, // Tambahkan API key ke data user baru
-      // Anda dapat menambahkan properti lain jika diperlukan
+      api_key: apiKey, 
     };
 
     await usersCollection.insertOne(newUser);

@@ -17,7 +17,6 @@ const getAllProduk = async function (req, res) {
     console.log(`Get all produk - Page: ${page}, PageSize: ${pageSize}`);
     await res.send(results);
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 };
@@ -38,7 +37,6 @@ const getProdukById = async function (req, res) {
     console.log(`Get product by ID - Product ID: ${produkId}`);
     res.send(result);
   } finally {
-    // Ensure that the client will close when you finish/error
     await client.close();
   }
 };
@@ -60,7 +58,6 @@ const getAllKategori = async function (req, res) {
     console.log(`Get all kategori - Page: ${page}, PageSize: ${pageSize}`);
     await res.send(results);
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 };
@@ -75,7 +72,6 @@ const getProdukByKategoriId = async function (req, res) {
 
     const produkCollection = await client.db("ecommerce").collection("produk");
 
-    // Get produk berdasarkan kategoriId
     const products = await produkCollection
       .find({ kategori_id: kategoriId })
       .skip((page - 1) * pageSize)
@@ -104,10 +100,8 @@ const getProdukByArea = async function (req, res) {
     await client.connect();
 
     const produkCollection = await client.db("ecommerce").collection("produk");
-    // Menggunakan ekspresi reguler untuk mencocokkan area tanpa memperhatikan huruf besar/kecil
     const areaRegex = new RegExp(area, "i");
 
-    // Menambahkan pencarian berdasarkan area dengan like query
     const products = await produkCollection
       .find({ area: { $regex: areaRegex } })
       .skip((page - 1) * pageSize)
@@ -136,10 +130,8 @@ const getProdukByName = async function (req, res) {
     await client.connect();
 
     const produkCollection = await client.db("ecommerce").collection("produk");
-    // Menggunakan ekspresi reguler untuk mencocokkan name tanpa memperhatikan huruf besar/kecil
     const nameRegex = new RegExp(name, "i");
 
-    // Menambahkan pencarian berdasarkan name dengan like query
     const products = await produkCollection
       .find({ name: { $regex: nameRegex } })
       .skip((page - 1) * pageSize)
